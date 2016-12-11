@@ -45,9 +45,16 @@ export default class tb extends Component {
       }
     });
 
+    firebase.auth().signInWithEmailAndPassword('elong925@gmail.com', 'password1!').catch(function(error) {
+      // Handle Errors here.
+      console.log(error)
+      var errorCode = error.code;
+      var errorMessage = error.message;
+    });
+
     // firebase.auth().signOut();
 
-    // this.itemsRef.push({ title: 'heyyyyyy' });
+    this.itemsRef.push({ title: 'authorized push' });
 
     // firebase.auth().createUserWithEmailAndPassword('elong925@gmail.com', 'password1!').catch(function(error) {
     //   // Handle Errors here.
