@@ -16,8 +16,6 @@ import {
 } from 'react-native';
 
 const StatusBar = require('./components/StatusBar');
-const ActionButton = require('./components/ActionButton');
-const ListItem = require('./components/ListItem');
 const styles = require('./styles.js');
 
 // Initialize Firebase
@@ -34,20 +32,29 @@ const provider = new firebase.auth.FacebookAuthProvider();
 export default class tb extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      })
-    };
+    this.state = {};
     this.itemsRef = firebaseApp.database().ref();
   }
 
   componentDidMount() {
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows([{ title: 'Pizza' }])
-    })
-    console.log('did mount', this.itemsRef);
-    this.itemsRef.push({ title: 'heyyyyyy' })
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        console.log('signed in', user);
+      } else {
+        console.log('not signed in', user);
+      }
+    });
+
+    // firebase.auth().signOut();
+
+    // this.itemsRef.push({ title: 'heyyyyyy' });
+
+    // firebase.auth().createUserWithEmailAndPassword('elong925@gmail.com', 'password1!').catch(function(error) {
+    //   // Handle Errors here.
+    //   console.log(error)
+    //   var errorCode = error.code;
+    //   var errorMessage = error.message;
+    // });
   }
   render() {
     return (
