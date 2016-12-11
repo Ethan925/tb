@@ -12,7 +12,7 @@ import {
   StyleSheet,
   Text,
   View,
-  ListView
+  Navigator
 } from 'react-native';
 
 const StatusBar = require('./components/StatusBar');
@@ -72,12 +72,6 @@ export default class tb extends Component {
       </View>
     );
   }
-  _renderItem(item) {
-    return (
-      <ListItem item="{item}" />
-    );
-  }
-
 }
 
 AppRegistry.registerComponent('tb', () => tb);
