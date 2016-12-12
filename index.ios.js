@@ -1,77 +1,84 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
-import React, { Component } from 'react';
-import * as firebase from 'firebase';
-// import ReactNative from 'react-native';
+'use strict';
 import {
   AppRegistry,
-  StyleSheet,
   Text,
   View,
-  Navigator
+  Navigator,
+  AsyncStorage
 } from 'react-native';
 
-const StatusBar = require('./components/StatusBar');
-const styles = require('./styles.js');
+import React, {
+  Component,
+} from 'react';
 
-// Initialize Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyATXL8waxCWCSWQRALbpG39yBA4WiIsKy4",
-  authDomain: "<your-auth-domain>",
-  databaseURL: "https://talentbase-b2a57.firebaseio.com/",
-  storageBucket: "gs://talentbase-b2a57.appspot.com",
-};
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-const provider = new firebase.auth.FacebookAuthProvider();
+import Signup from './app/SignUp';
+import Account from './app/Account';
 
+import Header from './app/components/Header';
 
-export default class tb extends Component {
-  constructor(props) {
+import styles from './app/util/styles.js';
+import app from './app/util/firebase.js';
+
+class tb extends Component {
+
+  constructor(props){
     super(props);
-    this.state = {};
-    this.itemsRef = firebaseApp.database().ref();
+    this.state = {
+      component: null,
+      loaded: false,
+      hello: 'world',
+    };
   }
 
-  componentDidMount() {
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        console.log('signed in', user);
-      } else {
-        console.log('not signed in', user);
+  componentWillMount(){
+
+
+    AsyncStorage.getItem('user_data').then((user_data_json) => {
+      let user_data = JSON.parse(user_data_json);
+      let component = {component: Signup};
+      if(user_data != null){
+        app.authWithCustomToken(user_data.token, (error, authData) => {
+          if(error){
+            this.setState(component);
+          }else{
+            this.setState({component: Account});
+          }
+        });
+      }else{
+        this.setState(component);
+        console.log('else', component)
       }
     });
 
-    firebase.auth().signInWithEmailAndPassword('elong925@gmail.com', 'password1!').catch(function(error) {
-      // Handle Errors here.
-      console.log(error)
-      var errorCode = error.code;
-      var errorMessage = error.message;
-    });
-
-    // firebase.auth().signOut();
-
-    this.itemsRef.push({ title: 'authorized push' });
-
-    // firebase.auth().createUserWithEmailAndPassword('elong925@gmail.com', 'password1!').catch(function(error) {
-    //   // Handle Errors here.
-    //   console.log(error)
-    //   var errorCode = error.code;
-    //   var errorMessage = error.message;
-    // });
   }
-  render() {
-    return (
-      <View style={styles.container}>
 
-        <StatusBar title="Fuck bitches get money" />
+  render(){
 
-      </View>
-    );
+    if(this.state.component){
+      return (
+        <Navigator
+          initialRoute={{component: this.state.component}}
+          configureScene={() => {
+            return Navigator.SceneConfigs.FloatFromRight;
+          }}
+          renderScene={(route, navigator) => {
+            if(route.component){
+              return React.createElement(route.component, { navigator });
+            }
+          }}
+        />
+      );
+    }else{
+      return (
+        <View style={styles.container}>
+          <Header text="React Native Firebase Auth" loaded={this.state.loaded} />
+          <View style={styles.body}></View>
+        </View>
+      );
+    }
+
   }
+
 }
 
 AppRegistry.registerComponent('tb', () => tb);
