@@ -5,7 +5,8 @@ import {
   View,
   Navigator,
   AsyncStorage,
-  StyleSheet
+  StyleSheet,
+  Image,
 } from 'react-native';
 
 import React, {
@@ -22,7 +23,7 @@ import styles from './util/styles.js';
 import app from './util/firebase.js';
 
 
-class Account extends Component {
+export default class Account extends Component {
 
   constructor(props){
 
@@ -37,11 +38,32 @@ class Account extends Component {
 
     AsyncStorage.getItem('user_data').then((user_data_json) => {
       let user_data = JSON.parse(user_data_json);
-      console.log(user_data);
+      console.log(1, user_data, this.state);
       this.setState({
-        user: user_data,
-        loaded: true
+        // user: {
+        //   name: 'ethan',
+        //   email: 'ethan@gmail.com',
+        // },
+        loaded: true,
       });
+      console.log(2, user_data, this.state);
+
+    });
+
+  }
+
+
+  logout(){
+
+    AsyncStorage.removeItem('user_data').then(() => {
+      app.auth().signOut().then(() => {
+        this.props.navigator.push({
+          component: Login,
+        });
+      }, (error) => {
+       console.log('error logging out', error)
+      });
+
     });
 
   }
@@ -51,6 +73,13 @@ class Account extends Component {
     return (
       <View style={styles.container}>
         <Header text="Account" loaded={this.state.loaded} />
+        <Text>x{this.state.user}x</Text>
+        <Button
+          text="Go to Login"
+          onpress={this.logout.bind(this)}
+          button_styles={styles.primary_button}
+          button_text_styles={styles.primary_button_text}
+        />
         <View style={styles.body}>
         {
           this.state.user &&
@@ -58,31 +87,18 @@ class Account extends Component {
               <View style={page_styles.email_container}>
                 <Text style={page_styles.email_text}>{this.state.user.email}</Text>
               </View>
-              <Image
-                style={styles.image}
-                source={{uri: this.state.user.password.profileImageURL}}
-              />
+
               <Button
-                  text="Logout"
-                  onpress={this.logout.bind(this)}
-                  button_styles={styles.primary_button}
-                  button_text_styles={styles.primary_button_text} />
+                text="Logout"
+                onpress={this.logout.bind(this)}
+                button_styles={styles.primary_button}
+                button_text_styles={styles.primary_button_text}
+              />
             </View>
         }
         </View>
       </View>
     );
-  }
-
-  logout(){
-
-    AsyncStorage.removeItem('user_data').then(() => {
-      app.unauth();
-      this.props.navigator.push({
-        component: Login
-      });
-    });
-
   }
 
 }
@@ -95,5 +111,3 @@ const page_styles = StyleSheet.create({
     fontSize: 18
   }
 });
-
-module.exports = Account;

@@ -4,7 +4,8 @@ import {
   Text,
   View,
   Navigator,
-  AsyncStorage
+  AsyncStorage,
+  Button,
 } from 'react-native';
 
 import React, {
@@ -12,6 +13,7 @@ import React, {
 } from 'react';
 
 import Signup from './app/SignUp';
+import Login from './app/Login';
 import Account from './app/Account';
 
 import Header from './app/components/Header';
@@ -21,7 +23,7 @@ import app from './app/util/firebase.js';
 
 class tb extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       component: null,
@@ -31,7 +33,6 @@ class tb extends Component {
   }
 
   componentWillMount(){
-
 
     AsyncStorage.getItem('user_data').then((user_data_json) => {
       let user_data = JSON.parse(user_data_json);
@@ -52,9 +53,22 @@ class tb extends Component {
 
   }
 
+  logout() {
+    AsyncStorage.removeItem('user_data').then(() => {
+      app.unauth();
+    });
+    this.props.navigator.push({
+      component: Login
+    });
+  }
+
+  goToAccount() {
+    this.props.navigator.push({component: Account})
+  }
+
   render(){
 
-    if(this.state.component){
+    if(this.state.component) {
       return (
         <Navigator
           initialRoute={{component: this.state.component}}
@@ -68,11 +82,24 @@ class tb extends Component {
           }}
         />
       );
-    }else{
+    } else {
       return (
         <View style={styles.container}>
           <Header text="React Native Firebase Auth" loaded={this.state.loaded} />
-          <View style={styles.body}></View>
+          <View style={styles.body}>
+            <Button
+              title="Account"
+              onPress={this.goToAccount.bind(this)}
+              button_styles={styles.primary_button}
+              button_text_styles={styles.primary_button_text}
+            />
+            <Button
+              title="Logout"
+              onPress={this.logout.bind(this)}
+              button_styles={styles.primary_button}
+              button_text_styles={styles.primary_button_text}
+            />
+          </View>
         </View>
       );
     }

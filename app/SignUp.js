@@ -21,11 +21,10 @@ import styles from './util/styles.js';
 import app from './util/firebase.js';
 
 
-class SignUp extends Component {
+export default class SignUp extends Component {
 
   constructor(props){
     super(props);
-    console.log(props.hello)
     this.state = {
       loaded: true,
       email: '',
@@ -46,7 +45,7 @@ class SignUp extends Component {
         alert('Your account was created!');
         console.log(userData);
       }).catch((error) => {
-
+        console.log(error);
         switch(error.code){
 
           case "EMAIL_TAKEN":
@@ -111,5 +110,3 @@ class SignUp extends Component {
     );
   }
 }
-
-module.exports = SignUp;

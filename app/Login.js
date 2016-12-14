@@ -23,7 +23,7 @@ import Firebase from 'firebase';
 import styles from './util/styles.js';
 import app from './util/firebase.js';
 
-class Login extends Component {
+export default class Login extends Component {
 
   constructor(props){
     super(props);
@@ -71,7 +71,6 @@ class Login extends Component {
   }
 
   login(){
-
     this.setState({
       loaded: false
     });
@@ -88,27 +87,6 @@ class Login extends Component {
       console.log(error)
       alert('Login Failed. Please try again');
     });
-
-    // app.authWithPassword({
-    //   "email": this.state.email,
-    //   "password": this.state.password
-    // }, (error, user_data) => {
-
-    //   this.setState({
-    //     loaded: true
-    //   });
-
-    //   if(error){
-    //     alert('Login Failed. Please try again');
-    //   }else{
-    //     AsyncStorage.setItem('user_data', JSON.stringify(user_data));
-    //     this.props.navigator.push({
-    //       component: Account
-    //     });
-    //   }
-    // });
-
-
   }
 
   goToSignup(){
@@ -118,5 +96,3 @@ class Login extends Component {
   }
 
 }
-
-module.exports = Login;
