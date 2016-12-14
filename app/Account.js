@@ -75,7 +75,7 @@ export default class Account extends Component {
         <Header text="Account" loaded={this.state.loaded} />
         <Text>x{this.state.user}x</Text>
         <Button
-          text="Go to Login"
+          text="Logout"
           onpress={this.logout.bind(this)}
           button_styles={styles.primary_button}
           button_text_styles={styles.primary_button_text}
