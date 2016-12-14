@@ -80,13 +80,12 @@ export default class SignUp extends Component {
       <View style={styles.container}>
         <Header text="Signup" loaded={this.state.loaded} />
         <View style={styles.body}>
-<Text>{this.state.email}</Text>
-            <TextInput
-                style={styles.textinput}
-                onChangeText={(text) => this.setState({email: text})}
-                value={this.state.email}
+          <TextInput
+            style={styles.textinput}
+            onChangeText={(text) => this.setState({email: text})}
+            value={this.state.email}
             placeholder={"Email Address"}
-            />
+          />
           <TextInput
             style={styles.textinput}
             onChangeText={(text) => this.setState({password: text})}
@@ -98,13 +97,14 @@ export default class SignUp extends Component {
             text="Signup"
             onpress={this.signup.bind(this)}
             button_styles={styles.primary_button}
-            button_text_styles={styles.primary_button_text} />
-
+            button_text_styles={styles.primary_button_text}
+          />
           <Button
             text="Have an Account?"
             onpress={this.goToLogin.bind(this)}
             button_styles={styles.transparent_button}
-            button_text_styles={styles.transparent_button_text} />
+            button_text_styles={styles.transparent_button_text}
+          />
         </View>
       </View>
     );
