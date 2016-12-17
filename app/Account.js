@@ -7,6 +7,7 @@ import {
   AsyncStorage,
   StyleSheet,
   Image,
+  TextInput,
 } from 'react-native';
 
 import React, {
@@ -35,26 +36,21 @@ export default class Account extends Component {
   }
 
   componentWillMount(){
-
     AsyncStorage.getItem('user_data').then((user_data_json) => {
-      let user_data = JSON.parse(user_data_json);
-      console.log(1, user_data, this.state);
-      this.setState({
-        // user: {
-        //   name: 'ethan',
-        //   email: 'ethan@gmail.com',
-        // },
-        loaded: true,
+      const user = JSON.parse(user_data_json);
+      app.database().ref('users/' + user.uid).once('value').then((snapshot) => {
+        const dbUser = snapshot.val();
+        this.setState({
+          user,
+          dbUser,
+          loaded: true,
+        });
       });
-      console.log(2, user_data, this.state);
-
     });
-
   }
 
 
   logout(){
-
     AsyncStorage.removeItem('user_data').then(() => {
       app.auth().signOut().then(() => {
         this.props.navigator.push({
@@ -63,9 +59,11 @@ export default class Account extends Component {
       }, (error) => {
        console.log('error logging out', error)
       });
-
     });
+  }
 
+  updateUser() {
+    app.database().ref('users/' + this.state.dbUser.uid).set(this.state.dbUser)
   }
 
   render(){
@@ -73,21 +71,46 @@ export default class Account extends Component {
     return (
       <View style={styles.container}>
         <Header text="Account" loaded={this.state.loaded} />
-        <Text>x{this.state.user}x</Text>
-        <Button
-          text="Logout"
-          onpress={this.logout.bind(this)}
-          button_styles={styles.primary_button}
-          button_text_styles={styles.primary_button_text}
-        />
-        <View style={styles.body}>
         {
           this.state.user &&
             <View style={styles.body}>
-              <View style={page_styles.email_container}>
-                <Text style={page_styles.email_text}>{this.state.user.email}</Text>
-              </View>
 
+              <View style={page_styles.email_container}>
+                <Text style={page_styles.email_text}>email: {this.state.user.email}</Text>
+                <Text style={page_styles.email_text}>name: {this.state.user.name}</Text>
+                <TextInput
+                  style={styles.textinput}
+                  value={this.state.dbUser.displayName}
+                  placeholder={"displayName"}
+                  onChangeText={
+                    (text) => this.setState({
+                      dbUser: {
+                        ...this.state.dbUser,
+                        displayName: text,
+                      }
+                    })
+                  }
+                />
+                <TextInput
+                  style={styles.textinput}
+                  value={this.state.dbUser.bio}
+                  placeholder={"Bio"}
+                  onChangeText={
+                    (text) => this.setState({
+                      dbUser: {
+                        ...this.state.dbUser,
+                        bio: text,
+                      }
+                    })
+                  }
+                />
+              </View>
+              <Button
+                text="Save"
+                onpress={this.updateUser.bind(this)}
+                button_styles={styles.primary_button}
+                button_text_styles={styles.primary_button_text}
+              />
               <Button
                 text="Logout"
                 onpress={this.logout.bind(this)}
@@ -96,7 +119,6 @@ export default class Account extends Component {
               />
             </View>
         }
-        </View>
       </View>
     );
   }
