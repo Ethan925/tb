@@ -57,13 +57,11 @@ class tb extends Component {
     AsyncStorage.removeItem('user_data').then(() => {
       app.unauth();
     });
-    this.props.navigator.push({
-      component: Login
-    });
+    this.setState({component: Login});
   }
 
   goToAccount() {
-    this.props.navigator.push({component: Account})
+    this.setState({component: Account})
   }
 
   render(){
