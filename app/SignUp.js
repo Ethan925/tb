@@ -43,7 +43,11 @@ export default class SignUp extends Component {
       this.state.password
       ).then((userData) => {
         alert('Your account was created!');
-        console.log(userData);
+        const dbUser = {
+          uid: userData.uid,
+          displayName: userData.displayName
+        };
+        app.database().ref('users/' + userData.uid).set(dbUser)
       }).catch((error) => {
         console.log(error);
         switch(error.code){
