@@ -18,8 +18,6 @@ import Header from './components/Header';
 import Signup from './SignUp';
 import Account from './Account';
 
-import Firebase from 'firebase';
-
 import styles from './util/styles.js';
 import app from './util/firebase.js';
 

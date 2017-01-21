@@ -1,4 +1,5 @@
 'use strict';
+import _ from 'lodash';
 import {
   AppRegistry,
   Text,
@@ -8,6 +9,7 @@ import {
   StyleSheet,
   Image,
   TextInput,
+  Picker,
 } from 'react-native';
 
 import React, {
@@ -47,6 +49,13 @@ export default class Account extends Component {
         });
       });
     });
+
+    app.database().ref('talents/').once('value').then((snapshot) => {
+      const talents = snapshot.val();
+      this.talentOptions = _.map(talents, (talent) => {
+        return <Picker.Item label={talent} key={talent} value={talent} />;
+      });
+    });
   }
 
 
@@ -78,6 +87,7 @@ export default class Account extends Component {
               <View style={page_styles.email_container}>
                 <Text style={page_styles.email_text}>email: {this.state.user.email}</Text>
                 <Text style={page_styles.email_text}>name: {this.state.user.name}</Text>
+                <Text style={page_styles.email_text}>talent: {this.state.dbUser.talent}</Text>
                 <TextInput
                   style={styles.textinput}
                   value={this.state.dbUser.displayName}
@@ -104,6 +114,23 @@ export default class Account extends Component {
                     })
                   }
                 />
+                <Picker
+                  selectedValue={this.state.dbUser.talent}
+                  onValueChange={
+                    (talent) => {
+                      this.setState({
+                        dbUser: {
+                          ...this.state.dbUser,
+                          talent: talent,
+                        }
+                      })
+                    }
+                  }
+                  mode="dropdown"
+                >
+                  <Picker.Item label="Select a talent" value="Select a talent" />
+                  {this.talentOptions}
+                </Picker>
               </View>
               <Button
                 text="Save"
