@@ -15,6 +15,7 @@ import React, {
 import Signup from './app/SignUp';
 import Login from './app/Login';
 import Account from './app/Account';
+import Explore from './app/Explore';
 
 import Header from './app/components/Header';
 
@@ -64,6 +65,10 @@ class tb extends Component {
     this.setState({component: Account})
   }
 
+  goToExplore() {
+    this.setState({component: Explore})
+  }
+
   render(){
 
     if(this.state.component) {
@@ -88,6 +93,12 @@ class tb extends Component {
             <Button
               title="Account"
               onPress={this.goToAccount.bind(this)}
+              button_styles={styles.primary_button}
+              button_text_styles={styles.primary_button_text}
+            />
+            <Button
+              title="Explore"
+              onPress={this.goToExplore.bind(this)}
               button_styles={styles.primary_button}
               button_text_styles={styles.primary_button_text}
             />
