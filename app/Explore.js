@@ -6,16 +6,14 @@ import {
   StyleSheet,
   Image,
   Picker,
+  ListView,
 } from 'react-native';
 
 import React, {
   Component,
 } from 'react';
 
-import Button from './components/Button';
 import Header from './components/Header';
-
-import Login from './Login';
 
 import styles from './util/styles.js';
 
@@ -24,31 +22,42 @@ import app from './util/firebase.js';
 
 export default class Explore extends Component {
 
-  constructor(props){
-
+   constructor(props) {
     super(props);
+    this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      loaded: false,
-    }
-
+      dataSource: this.ds.cloneWithRows([
+        <Text>Loading...</Text>,
+      ])
+    };
   }
 
   componentWillMount(){
 
-    app.database().ref('talents/').once('value').then((snapshot) => {
-      const talents = snapshot.val();
-      this.talentOptions = _.map(talents, (talent) => {
-        return <Picker.Item label={talent} key={talent} value={talent} />;
-      });
+    app.database().ref('users/').orderByChild('talent').equalTo('guitar').once('value').then((snapshot) => {
+      console.log(snapshot.val())
+      const users = snapshot.val();
+      this.setState({
+        ...this.state,
+        dataSource: this.ds.cloneWithRows(_.map(users, (user) => {
+          return  <View style={{paddingBottom: 10}}>
+                    <Text>{user.displayName}</Text>
+                    <Text>{user.talent}</Text>
+                    <Text>{user.bio}</Text>
+                  </View>;
+        }))
+      })
     });
   }
 
   render(){
 
     return (
-      <View style={styles.container}>
-        <Header text="Explore" loaded={this.state.loaded} />
-        <Text>Here</Text>
+      <View style={{flex: 1, paddingTop: 22}}>
+        <ListView
+          dataSource={this.state.dataSource}
+          renderRow={(rowData) => <View>{rowData}</View>}
+        />
       </View>
     );
   }
