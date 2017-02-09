@@ -27,26 +27,52 @@ export default class Explore extends Component {
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       dataSource: this.ds.cloneWithRows([
-        <Text>Loading...</Text>,
-      ])
+        <Text>Please select a talent</Text>,
+      ]),
+      talent: undefined,
     };
   }
 
   componentWillMount(){
 
-    app.database().ref('users/').orderByChild('talent').equalTo('guitar').once('value').then((snapshot) => {
+    app.database().ref('talents/').once('value').then((snapshot) => {
+      const talents = snapshot.val();
+      this.talentOptions = _.map(talents, (talent) => {
+        return <Picker.Item label={talent} key={talent} value={talent} />;
+      });
+    });
+  }
+
+  filterUsers(talent) {
+    this.setState({
+      ...this.state,
+      talent,
+      dataSource: this.ds.cloneWithRows([
+        <Text>Loading...</Text>,
+      ])
+    });
+    app.database().ref('users/').orderByChild('talent').equalTo(talent).once('value').then((snapshot) => {
       console.log(snapshot.val())
       const users = snapshot.val();
-      this.setState({
-        ...this.state,
-        dataSource: this.ds.cloneWithRows(_.map(users, (user) => {
-          return  <View style={{paddingBottom: 10}}>
-                    <Text>{user.displayName}</Text>
-                    <Text>{user.talent}</Text>
-                    <Text>{user.bio}</Text>
-                  </View>;
-        }))
-      })
+      if (users) {
+        this.setState({
+          ...this.state,
+          dataSource: this.ds.cloneWithRows(_.map(users, (user) => {
+            return  <View style={{paddingBottom: 10}}>
+                      <Text>{user.displayName}</Text>
+                      <Text>{user.talent}</Text>
+                      <Text>{user.bio}</Text>
+                    </View>;
+          }))
+        })
+      } else {
+        this.setState({
+          ...this.state,
+          dataSource: this.ds.cloneWithRows([
+            <Text>Nobody currently matches '{talent}'</Text>,
+          ])
+        });
+      }
     });
   }
 
@@ -54,6 +80,18 @@ export default class Explore extends Component {
 
     return (
       <View style={{flex: 1, paddingTop: 22}}>
+        <Picker
+          selectedValue={this.state.talent}
+          onValueChange={
+            (talent) => {
+              this.filterUsers(talent);
+            }
+          }
+          mode="dropdown"
+        >
+          <Picker.Item label="Select a talent" value="Select a talent" />
+          {this.talentOptions}
+        </Picker>
         <ListView
           dataSource={this.state.dataSource}
           renderRow={(rowData) => <View>{rowData}</View>}
