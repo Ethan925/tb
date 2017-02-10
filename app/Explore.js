@@ -30,6 +30,7 @@ export default class Explore extends Component {
         <Text>Please select a talent</Text>,
       ]),
       talent: undefined,
+      loaded: false,
     };
   }
 
@@ -40,6 +41,10 @@ export default class Explore extends Component {
       this.talentOptions = _.map(talents, (talent) => {
         return <Picker.Item label={talent} key={talent} value={talent} />;
       });
+      this.setState({
+        ...this.state,
+        loaded: true,
+      })
     });
   }
 
