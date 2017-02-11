@@ -7,12 +7,16 @@ import {
   Image,
   Picker,
   ListView,
+  Navigator,
 } from 'react-native';
 
 import React, {
   Component,
 } from 'react';
 
+import Detail from './Detail';
+
+import Button from './components/Button';
 import Header from './components/Header';
 
 import styles from './util/styles.js';
@@ -63,10 +67,15 @@ export default class Explore extends Component {
         this.setState({
           ...this.state,
           dataSource: this.ds.cloneWithRows(_.map(users, (user) => {
-            return  <View style={{paddingBottom: 10}}>
+            return  <View
+                      style={{paddingBottom: 10}}
+                    >
                       <Text>{user.displayName}</Text>
                       <Text>{user.talent}</Text>
                       <Text>{user.bio}</Text>
+                       <Button
+                        text="View"
+                        onpress={() => this.goToDetail.bind(this)(user)}/>
                     </View>;
           }))
         })
@@ -81,28 +90,53 @@ export default class Explore extends Component {
     });
   }
 
-  render(){
+  goToDetail(fitlerUser) {
+    this.setState({
+      ...this.state,
+      fitlerUser,
+      component: Detail
+    })
+  }
 
-    return (
-      <View style={{flex: 1, paddingTop: 22}}>
-        <Picker
-          selectedValue={this.state.talent}
-          onValueChange={
-            (talent) => {
-              this.filterUsers(talent);
+  render(){
+    if(this.state.component) {
+      return (
+        <Navigator
+          initialRoute={{component: this.state.component}}
+          configureScene={() => {
+            return Navigator.SceneConfigs.FloatFromRight;
+          }}
+          renderScene={(route, navigator) => {
+            console.log(route, navigator);
+            if(route.component){
+              return React.createElement(route.component, { navigator });
             }
-          }
-          mode="dropdown"
-        >
-          <Picker.Item label="Select a talent" value="Select a talent" />
-          {this.talentOptions}
-        </Picker>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={(rowData) => <View>{rowData}</View>}
+          }}
+          user={this.state.fitlerUser}
         />
-      </View>
-    );
+      );
+    } else {
+      return (
+        <View style={{flex: 1, paddingTop: 22}}>
+          <Picker
+            selectedValue={this.state.talent}
+            onValueChange={
+              (talent) => {
+                this.filterUsers(talent);
+              }
+            }
+            mode="dropdown"
+          >
+            <Picker.Item label="Select a talent" value="Select a talent" />
+            {this.talentOptions}
+          </Picker>
+          <ListView
+            dataSource={this.state.dataSource}
+            renderRow={(rowData) => <View>{rowData}</View>}
+          />
+        </View>
+      );
+    }
   }
 
 }

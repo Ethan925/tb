@@ -94,6 +94,7 @@ export default class Account extends Component {
                   placeholder={"displayName"}
                   onChangeText={
                     (text) => this.setState({
+                      ...this.state,
                       dbUser: {
                         ...this.state.dbUser,
                         displayName: text,
@@ -107,6 +108,7 @@ export default class Account extends Component {
                   placeholder={"Bio"}
                   onChangeText={
                     (text) => this.setState({
+                      ...this.state,
                       dbUser: {
                         ...this.state.dbUser,
                         bio: text,
@@ -119,6 +121,7 @@ export default class Account extends Component {
                   onValueChange={
                     (talent) => {
                       this.setState({
+                        ...this.state,
                         dbUser: {
                           ...this.state.dbUser,
                           talent: talent,
